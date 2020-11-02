@@ -9,7 +9,6 @@ export default class Form extends Component {
     addContact = (e) => {
         e.preventDefault();
 
-     
         let newContact = {
             prenom: e.target.prenom.value,
             nom: e.target.nom.value,
@@ -17,8 +16,6 @@ export default class Form extends Component {
             compagnie: e.target.compagnie.value,
             notes: e.target.notes.value,
         }
-        console.log(newContact);
-
          // init db
         const db = firebase.firestore();
         const settings = {timestampsInSnapshots: true};
@@ -29,9 +26,8 @@ export default class Form extends Component {
         document.getElementById("addContact").reset();
         // update data
         this.updateData();
-
-
     }
+    
 
     render() {
         return (
