@@ -1,7 +1,6 @@
 import React,{Component} from 'react';
 import './App.css';
-import firebase from 'firebase';
-import data from '../data.json'
+import firebase from '../firebase';
 import Grid from './Grid';
 import Form from './Form';
 
@@ -9,23 +8,38 @@ import Form from './Form';
 class App extends Component {
   constructor(props){
     super(props);
-    this.state = {data};
+    this.state = {
+      contacts : []
+    };
   }
+  updateData(){
+    // init db
+    const db = firebase.firestore();
+    const settings = {timestampsInSnapshots: true};
+    db.settings(settings);
+    // select from db
+    db.collection('contacts').get() // get la collection contacts
+   .then( (snapshot) => {
+     let contacts = [];
+     snapshot.forEach( (doc) => {
+       let contact = Object.assign({id: doc.id}, doc.data); // doc contient data
+       contacts.push(contact);
+     });
+     // change state
+     this.setState({
+       contacts : contacts
+     })
+   }  )
+    .catch(err => console.log('Erreur !',err));
 
+  }
   componentWillMount(){
-    firebase.initializeApp({
-        apiKey: "AIzaSyBVMMPnjMBlayMrPUcnDWyl3DFyUrWNV44",
-        authDomain: "crm-linkedin2020.firebaseapp.com",
-        databaseURL: "https://crm-linkedin2020.firebaseio.com",
-        projectId: "crm-linkedin2020",
-        storageBucket: "crm-linkedin2020.appspot.com",
-        messagingSenderId: "595142768449",
-        appId: "1:595142768449:web:310d9b06957859d8abd3c0",
-        measurementId: "G-9XMJB3ZP6G"
-    })
+    this.updateData();
+    console.log("willMountttttttttttttttttttttttttttt")
   }
 
   render(){
+    console.log("renderrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
     return (
       <div className="App">
           <div className="navbar-fixed">
@@ -36,8 +50,8 @@ class App extends Component {
             </nav>
           </div>
           <div>
-            <Form />
-            <Grid items={this.state.data} />
+            <Form  updateData={this.updateData.bind(this)} />
+            <Grid items={this.state.contacts} />
           </div>
       </div>
     );
